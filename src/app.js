@@ -1,6 +1,7 @@
 const express = require('express');
 const { v4: uuidv4 } = require('uuid');
 const sqlite3 = require('sqlite3').verbose();
+const path = require('path');
 
 const app = express();
 const PORT = 3000;
@@ -27,17 +28,7 @@ db.serialize(() => {
 
 app.use(express.json());
 
-app.post('/newRun', (req, res) => {
-    const runId = uuidv4();
-
-    db.run(`INSERT INTO RunInfo (run_id) VALUES (?)`, [runId], (err) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-    });
-
-    res.json({ id: runId });
-});
+app.use(express.static(path.join('../' + __dirname, 'public')));
 
 const server = app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
@@ -49,5 +40,26 @@ server.on('close', () => {
             return console.error(err.message);
         }
         console.log('Database connection closed.');
+    });
+});
+
+app.post('/api/run/new', (req, res) => {
+    const runId = uuidv4();
+
+    db.run(`INSERT INTO RunInfo (run_id) VALUES (?)`, [runId], (err) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+    });
+
+    res.json({ id: runId });
+});
+
+app.get('/api/run/all', (req, res) => {
+    db.all('SELECT * FROM RunInfo', (err, rows) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.json(rows);
     });
 });

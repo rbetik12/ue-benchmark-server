@@ -4,12 +4,15 @@
   "description": "",
   "main": "src/app.js",
   "scripts": {
-    "run": "node src/app.js"
+    "run": "node src/app.js",
+    "client": "cd src/client && npm run start"
   },
   "author": "rbetik12",
   "license": "MIT",
   "dependencies": {
     "express": "^4.19.2",
+    "http-proxy-middleware": "^2.0.6",
+    "path": "^0.12.7",
     "sqlite3": "^5.1.7",
     "uuid": "^9.0.1"
   }

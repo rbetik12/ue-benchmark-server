@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination } from '@mui/material';
 import { RunInfo } from '../../models/RunInfo';
 import './RunInfoTable.css';
 
 const RunInfoTable: React.FC = () => {
   const [runInfos, setRunInfos] = useState<RunInfo[]>([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   useEffect(() => {
     fetchRunInfos();
@@ -27,6 +29,15 @@ const RunInfoTable: React.FC = () => {
     }
   };
 
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
   return (
     <div>
       <TableContainer component={Paper} className="tableContainer">
@@ -38,7 +49,10 @@ const RunInfoTable: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {runInfos.map((runInfo) => (
+            {(rowsPerPage > 0
+              ? runInfos.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              : runInfos
+            ).map((runInfo) => (
               <TableRow key={runInfo.run_id}>
                 <TableCell>{runInfo.run_id}</TableCell>
                 <TableCell>{runInfo.timestamp}</TableCell>
@@ -46,6 +60,15 @@ const RunInfoTable: React.FC = () => {
             ))}
           </TableBody>
         </Table>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={runInfos.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
       </TableContainer>
     </div>
   );

@@ -16,10 +16,10 @@ db.serialize(() => {
 
     db.run(`CREATE TABLE IF NOT EXISTS RunData (
         id INTEGER PRIMARY KEY,
-        avg_fps REAL,
-        cpu_ms REAL,
-        gpu_ms REAL,
-        memops INTEGER,
+        fps REAL,
+        cpu_time REAL,
+        gpu_time REAL,
+        memops_amount INTEGER,
         mem_amount REAL,
         run_id TEXT,
         FOREIGN KEY(run_id) REFERENCES RunInfo(run_id)

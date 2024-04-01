@@ -22,6 +22,7 @@ db.serialize(() => {
         memops_amount INTEGER,
         mem_amount REAL,
         run_id TEXT,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY(run_id) REFERENCES RunInfo(run_id)
     )`);
 });
@@ -50,16 +51,53 @@ app.post('/api/run/new', (req, res) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
-    });
 
-    res.json({ id: runId });
+        console.log(`New run id was created: ${runId}`);
+        res.json({ id: runId });
+    });
 });
 
 app.get('/api/run/all', (req, res) => {
+    console.log(`Runs list was requested`);
+
     db.all('SELECT * FROM RunInfo', (err, rows) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
+
         res.json(rows);
+    });
+});
+
+app.post('/api/run/', (req, res) => {
+    const runData = req.body
+
+    db.run(`INSERT INTO RunData (fps, cpu_time, gpu_time, memops_amount, mem_amount, run_id) VALUES (?, ?, ?, ?, ?, ?)`, 
+    [runData['fps'], runData['cpu_time'], runData['gpu_time'], runData['memops_amount'], runData['mem_amount'], runData['run_id']], 
+    (err) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+
+        res.sendStatus(200)
+    });
+});
+
+app.get('/api/run/:id/data', (req, res) => {
+    const runId = req.params.id;
+
+    console.log(`Run "${runId}" data was requested`);
+
+    db.all(`SELECT * FROM RunData WHERE run_id='${runId}'`, (err, rows) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+
+        const processedJson = rows.map(item => {
+            const { id, run_id, ...rest } = item; // Extract 'id' and 'run_id'
+            return rest;
+        });
+
+        res.json(processedJson);
     });
 });

@@ -2,6 +2,7 @@ const express = require('express');
 const { v4: uuidv4 } = require('uuid');
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+const math = require('./math')
 
 const app = express();
 const PORT = 3000;
@@ -93,10 +94,15 @@ app.get('/api/run/:id/data', (req, res) => {
             return res.status(500).json({ error: err.message });
         }
 
-        const processedJson = rows.map(item => {
+        let processedJson = rows.map(item => {
             const { id, run_id, ...rest } = item; // Extract 'id' and 'run_id'
             return rest;
         });
+
+        const mode = req.query.mode;
+        if (mode && mode === 'average') {
+            processedJson = math.averageData(processedJson);
+        }
 
         res.json(processedJson);
     });

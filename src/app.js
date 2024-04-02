@@ -2,7 +2,9 @@ const express = require('express');
 const { v4: uuidv4 } = require('uuid');
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+const cookieParser = require('cookie-parser');
 const math = require('./math')
+const auth = require('./auth')
 
 const app = express();
 const PORT = 3000;
@@ -30,13 +32,17 @@ db.serialize(() => {
 
 app.use(express.json());
 
+app.use(cookieParser());
+
 app.use(express.static(path.join('../' + __dirname, 'public')));
 
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, async () => {
+    auth.init();
     console.log(`Server is running on port ${PORT}`);
 });
 
 server.on('close', () => {
+    auth.close();
     db.close((err) => {
         if (err) {
             return console.error(err.message);
@@ -45,7 +51,12 @@ server.on('close', () => {
     });
 });
 
-app.post('/api/run/new', (req, res) => {
+app.post('/api/auth', async (req, res) => {
+    await auth.authClient(req, res);
+    res.sendStatus(200);
+})
+
+app.post('/api/run/new', auth.checkCookie, (req, res) => {
     const runId = uuidv4();
 
     db.run(`INSERT INTO RunInfo (run_id) VALUES (?)`, [runId], (err) => {
@@ -70,7 +81,7 @@ app.get('/api/run/all', (req, res) => {
     });
 });
 
-app.post('/api/run/', (req, res) => {
+app.post('/api/run/', auth.checkCookie, (req, res) => {
     const runData = req.body
 
     db.run(`INSERT INTO RunData (fps, cpu_time, gpu_time, memops_amount, mem_amount, run_id) VALUES (?, ?, ?, ?, ?, ?)`, 

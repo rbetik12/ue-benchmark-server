@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button } from '@mui/material';
+import { Link } from 'react-router-dom';
 import { RunInfo } from '../../models/RunInfo';
 import './RunInfoTable.css';
 
@@ -53,9 +54,14 @@ const RunInfoTable: React.FC = () => {
               ? runInfos.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               : runInfos
             ).map((runInfo) => (
-              <TableRow key={runInfo.run_id}>
-                <TableCell>{runInfo.run_id}</TableCell>
+              <TableRow key={runInfo.runId}>
+                <TableCell>{runInfo.runId}</TableCell>
                 <TableCell>{runInfo.timestamp}</TableCell>
+                <TableCell>
+                  <Button component={Link} to={`/run/${runInfo.runId}`} variant="outlined" color="primary">
+                    Open
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

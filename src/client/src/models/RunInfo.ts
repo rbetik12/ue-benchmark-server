@@ -1,5 +1,5 @@
 export interface RunInfo {
-    run_id: string;
+    runId: string;
     timestamp: string;
 }
   

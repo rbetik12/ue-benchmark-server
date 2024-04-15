@@ -12,20 +12,20 @@ const averageData = (runData) => {
 
     for (const sample of runData) {
         fps.push(sample['fps'])
-        cpu_time.push(sample['cpu_time'])
-        gpu_time.push(sample['gpu_time'])
-        memops_amount.push(sample['memops_amount'])
-        mem_amount.push(sample['mem_amount'])
+        cpu_time.push(sample['cpuTime'])
+        gpu_time.push(sample['gpuTime'])
+        memops_amount.push(sample['memopsAmount'])
+        mem_amount.push(sample['memAmount'])
     }
 
     let avgData = {};
     avgData['fps'] = arraySum(fps) / fps.length
-    avgData['cpu_time'] = arraySum(cpu_time) / cpu_time.length
-    avgData['gpu_time'] = arraySum(gpu_time) / gpu_time.length
-    avgData['memops_amount'] = arraySum(memops_amount) / memops_amount.length
-    avgData['mem_amount'] = arraySum(mem_amount) / mem_amount.length
+    avgData['cpuTime'] = arraySum(cpu_time) / cpu_time.length
+    avgData['gpuTime'] = arraySum(gpu_time) / gpu_time.length
+    avgData['memopsAmount'] = arraySum(memops_amount) / memops_amount.length
+    avgData['memAmount'] = arraySum(mem_amount) / mem_amount.length
 
-    return avgData;
+    return [avgData];
 }
 
 module.exports = {

@@ -13,20 +13,20 @@ const db = new sqlite3.Database('runs.db');
 
 db.serialize(() => {
     db.run(`CREATE TABLE IF NOT EXISTS RunInfo (
-        run_id TEXT PRIMARY KEY,
+        runId TEXT PRIMARY KEY,
         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
     )`);
 
     db.run(`CREATE TABLE IF NOT EXISTS RunData (
         id INTEGER PRIMARY KEY,
         fps REAL,
-        cpu_time REAL,
-        gpu_time REAL,
-        memops_amount INTEGER,
-        mem_amount REAL,
-        run_id TEXT,
+        cpuTime REAL,
+        gpuTime REAL,
+        memopsAmount INTEGER,
+        memAmount REAL,
+        runId TEXT,
         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY(run_id) REFERENCES RunInfo(run_id)
+        FOREIGN KEY(runId) REFERENCES RunInfo(runId)
     )`);
 });
 
@@ -59,7 +59,7 @@ app.post('/api/auth', async (req, res) => {
 app.post('/api/run/new', auth.checkCookie, (req, res) => {
     const runId = uuidv4();
 
-    db.run(`INSERT INTO RunInfo (run_id) VALUES (?)`, [runId], (err) => {
+    db.run(`INSERT INTO RunInfo (runId) VALUES (?)`, [runId], (err) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
@@ -81,11 +81,11 @@ app.get('/api/run/all', (req, res) => {
     });
 });
 
-app.post('/api/run/', auth.checkCookie, (req, res) => {
+app.post('/api/run/:id/data', auth.checkCookie, (req, res) => {
     const runData = req.body
 
-    db.run(`INSERT INTO RunData (fps, cpu_time, gpu_time, memops_amount, mem_amount, run_id) VALUES (?, ?, ?, ?, ?, ?)`, 
-    [runData['fps'], runData['cpu_time'], runData['gpu_time'], runData['memops_amount'], runData['mem_amount'], runData['run_id']], 
+    db.run(`INSERT INTO RunData (fps, cpuTime, gpuTime, memopsAmount, memAmount, runId) VALUES (?, ?, ?, ?, ?, ?)`, 
+    [runData['fps'], runData['cpuTime'], runData['gpuTime'], runData['memopsAmount'], runData['memAmount'], req.params.id], 
     (err) => {
         if (err) {
             return res.status(500).json({ error: err.message });
@@ -100,13 +100,13 @@ app.get('/api/run/:id/data', (req, res) => {
 
     console.log(`Run "${runId}" data was requested`);
 
-    db.all(`SELECT * FROM RunData WHERE run_id='${runId}'`, (err, rows) => {
+    db.all(`SELECT * FROM RunData WHERE runId='${runId}'`, (err, rows) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
 
         let processedJson = rows.map(item => {
-            const { id, run_id, ...rest } = item; // Extract 'id' and 'run_id'
+            const { id, run_id, ...rest } = item;
             return rest;
         });
 

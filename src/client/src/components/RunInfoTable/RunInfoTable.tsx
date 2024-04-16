@@ -3,6 +3,7 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 import { Link } from 'react-router-dom';
 import { RunInfo } from '../../models/RunInfo';
 import './RunInfoTable.css';
+import { auth, checkAuth } from '../../utils';
 
 const RunInfoTable: React.FC = () => {
   const [runInfos, setRunInfos] = useState<RunInfo[]>([]);
@@ -10,8 +11,16 @@ const RunInfoTable: React.FC = () => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   useEffect(() => {
-    fetchRunInfos();
-    const intervalId = setInterval(fetchRunInfos, 5000);
+    const cb = async () => {
+      if (!await checkAuth()) {
+        await auth();
+      }
+
+      fetchRunInfos();
+    }
+
+    cb();
+    const intervalId = setInterval(fetchRunInfos, 6000);
     return () => clearInterval(intervalId);
   }, []);
 

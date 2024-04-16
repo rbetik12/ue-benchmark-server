@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import { RunData } from '../../models/RunData';
 import './RunDataTable.css';
+import { auth, checkAuth } from '../../utils';
 
 const RunDataTable = () => {
   const { id } = useParams();
@@ -10,6 +11,10 @@ const RunDataTable = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!await checkAuth()) {
+        await auth();
+      }
+
       try {
         const response = await fetch(`/api/run/${id}/data?mode=average`);
         if (!response.ok) {

@@ -28,8 +28,8 @@ const requestInfo = (req) => {
 const authClient = async (req, res) => {
     const cookieId = uuidv4();
 
-    // one hour cookie
-    res.cookie('authToken', cookieId, { maxAge: 3600000, httpOnly: true });
+    // one day cookie
+    res.cookie('authToken', cookieId, { maxAge: 86400, httpOnly: true });
 
     let cookieData = requestInfo(req);
 

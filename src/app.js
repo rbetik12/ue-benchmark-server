@@ -57,6 +57,10 @@ app.post('/api/auth', async (req, res) => {
     res.sendStatus(200);
 })
 
+app.get('/api/auth/check', auth.checkCookie, (req, res) => {
+    res.sendStatus(201);
+})
+
 app.post('/api/run/new', auth.checkCookie, (req, res) => {
     const runId = uuidv4();
 
@@ -124,7 +128,7 @@ app.get('/api/run/:id/data', (req, res) => {
     });
 });
 
-app.post('/api/run/:id/', (req, res) => {
+app.post('/api/run/:id/', auth.checkCookie, (req, res) => {
     const runId = req.params.id;
     const name = req.query.name;
 

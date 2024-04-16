@@ -14,6 +14,7 @@ const db = new sqlite3.Database('runs.db');
 db.serialize(() => {
     db.run(`CREATE TABLE IF NOT EXISTS RunInfo (
         runId TEXT PRIMARY KEY,
+        name TEXT,
         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
     )`);
 
@@ -61,7 +62,8 @@ app.post('/api/run/new', auth.checkCookie, (req, res) => {
 
     db.run(`INSERT INTO RunInfo (runId) VALUES (?)`, [runId], (err) => {
         if (err) {
-            return res.status(500).json({ error: err.message });
+            console.log(err.message);
+            return res.status(400).json({ error: err.message });
         }
 
         console.log(`New run id was created: ${runId}`);
@@ -74,7 +76,8 @@ app.get('/api/run/all', (req, res) => {
 
     db.all('SELECT * FROM RunInfo', (err, rows) => {
         if (err) {
-            return res.status(500).json({ error: err.message });
+            console.log(err.message);
+            return res.status(400).json({ error: err.message });
         }
 
         res.json(rows);
@@ -88,7 +91,8 @@ app.post('/api/run/:id/data', auth.checkCookie, (req, res) => {
     [runData['fps'], runData['cpuTime'], runData['gpuTime'], runData['memopsAmount'], runData['memAmount'], req.params.id], 
     (err) => {
         if (err) {
-            return res.status(500).json({ error: err.message });
+            console.log(err.message);
+            return res.status(400).json({ error: err.message });
         }
 
         res.sendStatus(200)
@@ -102,7 +106,8 @@ app.get('/api/run/:id/data', (req, res) => {
 
     db.all(`SELECT * FROM RunData WHERE runId='${runId}'`, (err, rows) => {
         if (err) {
-            return res.status(500).json({ error: err.message });
+            console.log(err.message);
+            return res.status(400).json({ error: err.message });
         }
 
         let processedJson = rows.map(item => {
@@ -116,5 +121,21 @@ app.get('/api/run/:id/data', (req, res) => {
         }
 
         res.json(processedJson);
+    });
+});
+
+app.post('/api/run/:id/', (req, res) => {
+    const runId = req.params.id;
+    const name = req.query.name;
+
+    db.run(`UPDATE RunInfo SET name='${name}' WHERE runId='${runId}'`, (err, rows) => {
+        if (err) {
+            console.log(err.message);
+            return res.status(400).json({ error: err.message });
+        }
+
+        console.log(`New name '${name}' for run "${runId}" was assigned`);
+
+        res.sendStatus(200);
     });
 });

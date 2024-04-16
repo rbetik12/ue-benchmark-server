@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, TextField } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { RunInfo } from '../../models/RunInfo';
 import './RunInfoTable.css';
@@ -39,6 +39,29 @@ const RunInfoTable: React.FC = () => {
     setPage(0);
   };
 
+  const handleNameChange = async (index: number, newValue: string) => {
+    const updatedRunInfos = [...runInfos];
+    updatedRunInfos[index].name = newValue;
+    setRunInfos(updatedRunInfos);
+
+    const updatedRunInfo = updatedRunInfos[index];
+
+    try {
+      const response = await fetch(`/api/run/${updatedRunInfo.runId}?name=${updatedRunInfo.name}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Failed to change run info');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div>
       <TableContainer component={Paper} className="tableContainer">
@@ -53,9 +76,15 @@ const RunInfoTable: React.FC = () => {
             {(rowsPerPage > 0
               ? runInfos.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               : runInfos
-            ).map((runInfo) => (
+            ).map((runInfo, index) => (
               <TableRow key={runInfo.runId}>
                 <TableCell>{runInfo.runId}</TableCell>
+                <TableCell>
+                  <TextField
+                    value={runInfo.name}
+                    onChange={(newValue) => handleNameChange(index, newValue.target.value)}
+                  />
+                </TableCell>
                 <TableCell>{runInfo.timestamp}</TableCell>
                 <TableCell>
                   <Button component={Link} to={`/run/${runInfo.runId}`} variant="outlined" color="primary">

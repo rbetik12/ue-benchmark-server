@@ -12,6 +12,8 @@ import {
 import { Line } from 'react-chartjs-2';
 import { useParams } from 'react-router-dom';
 import { RunData } from '../../models/RunData';
+import { RunInfo } from '../../models/RunInfo';
+import { fetchRunInfo } from "../../utils";
 
 ChartJS.register(
   CategoryScale,
@@ -29,13 +31,14 @@ interface GraphDataPoint {
 }
 
 const RunDataGraphPage: React.FC = () => {
-  const { id } = useParams();
+  const { id } = useParams<string>();
+  const [runInfo, setRunInfo] = useState<RunInfo>();
   const [runData, setRunData] = useState<RunData[]>([]);
   const [graphData, setGraphData] = useState<GraphDataPoint[]>([]);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [id]);
 
   const fetchData = async () => {
     try {
@@ -57,6 +60,11 @@ const RunDataGraphPage: React.FC = () => {
     } catch (error) {
       console.error('Failed to fetch graph data:', error);
     }
+
+    const newRunInfo = await fetchRunInfo(id as string);
+    if (newRunInfo) {
+      setRunInfo(newRunInfo);
+    }
   };
 
   const chartData = {
@@ -74,7 +82,7 @@ const RunDataGraphPage: React.FC = () => {
 
   return (
     <div>
-      <h1>Graph Page</h1>
+      <h1>Run name: {runInfo?.name}</h1>
       <Line data={chartData} />
     </div>
   );

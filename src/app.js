@@ -143,3 +143,18 @@ app.post('/api/run/:id/', auth.checkCookie, (req, res) => {
         res.sendStatus(200);
     });
 });
+
+app.get('/api/run/:id/', (req, res) => {
+    const runId = req.params.id;
+
+    console.log(`Run "${runId}" info was requested`);
+
+    db.all(`SELECT * FROM RunInfo WHERE runId='${runId}'`, (err, rows) => {
+        if (err) {
+            console.log(err.message);
+            return res.status(400).json({ error: err.message });
+        }
+
+        res.json(rows);
+    });
+});

@@ -1,3 +1,5 @@
+import { RunInfo } from "./models/RunInfo";
+
 export const checkAuth = async () => {
     try {
         const response = await fetch(`/api/auth/check`);
@@ -27,4 +29,20 @@ export const auth = async () => {
     } catch (error) {
         console.error(error);
     }
+}
+
+export const fetchRunInfo = async (id: string) => {
+    try {
+      const response = await fetch(`/api/run/${id}/`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch run info');
+      }
+
+      const runInfo: RunInfo = await response.json();
+      return runInfo;
+    } catch (error) {
+      console.error('Failed to fetch graph data:', error);
+    }
+    
+    return null;
 }

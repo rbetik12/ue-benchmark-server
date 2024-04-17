@@ -74,6 +74,9 @@ const RunInfoTable: React.FC = () => {
   const [selectedRows, setSelectedRows] = useState<string[]>([]); // State to keep track of selected rows
 
   const handleRowSelect = (runId: string) => {
+    if (selectedRows.length > 4) {
+      return;
+    }
     const selectedIndex = selectedRows.indexOf(runId);
     let newSelected: string[] = [];
 

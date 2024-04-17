@@ -15,6 +15,7 @@ import { RunData } from '../../models/RunData';
 import { RunInfo } from '../../models/RunInfo';
 import { fetchRunInfo } from "../../utils";
 import { Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import { GraphDataPoint } from '../../models/GraphDataPoint';
 
 ChartJS.register(
   CategoryScale,
@@ -25,11 +26,6 @@ ChartJS.register(
   Tooltip,
   Legend
 );
-
-interface GraphDataPoint {
-  x: number;
-  y: number;
-}
 
 const RunDataGraphPage: React.FC = () => {
   const { id } = useParams<string>();

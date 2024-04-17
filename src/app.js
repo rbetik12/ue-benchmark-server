@@ -155,6 +155,6 @@ app.get('/api/run/:id/', (req, res) => {
             return res.status(400).json({ error: err.message });
         }
 
-        res.json(rows);
+        res.json(rows[0]);
     });
 });

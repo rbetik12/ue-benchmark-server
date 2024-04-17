@@ -44,5 +44,6 @@ export const fetchRunInfo = async (id: string) => {
       console.error('Failed to fetch graph data:', error);
     }
     
-    return null;
+    const runInfo: RunInfo = {name: "", timestamp: "", runId: ""}
+    return runInfo;
 }

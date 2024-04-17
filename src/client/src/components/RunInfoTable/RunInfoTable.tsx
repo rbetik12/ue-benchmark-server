@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, TextField } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, TextField, Checkbox } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { RunInfo } from '../../models/RunInfo';
 import './RunInfoTable.css';
@@ -71,12 +71,47 @@ const RunInfoTable: React.FC = () => {
     }
   };
 
+  const [selectedRows, setSelectedRows] = useState<string[]>([]); // State to keep track of selected rows
+
+  const handleRowSelect = (runId: string) => {
+    const selectedIndex = selectedRows.indexOf(runId);
+    let newSelected: string[] = [];
+
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selectedRows, runId);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selectedRows.slice(1));
+    } else if (selectedIndex === selectedRows.length - 1) {
+      newSelected = newSelected.concat(selectedRows.slice(0, -1));
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        selectedRows.slice(0, selectedIndex),
+        selectedRows.slice(selectedIndex + 1)
+      );
+    }
+
+    setSelectedRows(newSelected);
+  };
+
+  const isSelected = (runId: string) => selectedRows.indexOf(runId) !== -1;
+
+  const getLinkCompareId = () => {
+    let linkId = ""
+
+    for (let id of selectedRows) {
+      linkId += id + "_";
+    }
+
+    return linkId;
+  }
+
   return (
     <div>
       <TableContainer component={Paper} className="tableContainer">
         <Table>
           <TableHead>
             <TableRow>
+              <TableCell>Select</TableCell>
               <TableCell>Run ID</TableCell>
               <TableCell>Timestamp</TableCell>
             </TableRow>
@@ -85,23 +120,35 @@ const RunInfoTable: React.FC = () => {
             {(rowsPerPage > 0
               ? runInfos.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               : runInfos
-            ).map((runInfo, index) => (
-              <TableRow key={runInfo.runId}>
-                <TableCell>{runInfo.runId}</TableCell>
-                <TableCell>
-                  <TextField
-                    value={runInfo.name}
-                    onChange={(newValue) => handleNameChange(index, newValue.target.value)}
-                  />
-                </TableCell>
-                <TableCell>{runInfo.timestamp}</TableCell>
-                <TableCell>
-                  <Button component={Link} to={`/run/${runInfo.runId}`} variant="outlined" color="primary">
-                    Open
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
+            ).map((runInfo, index) => {
+              const isItemSelected = isSelected(runInfo.runId);
+              const labelId = `checkbox-${runInfo.runId}`;
+
+              return (
+                <TableRow key={runInfo.runId}>
+                  <TableCell>
+                    <Checkbox
+                      checked={isItemSelected}
+                      inputProps={{ 'aria-labelledby': labelId }}
+                      onClick={() => handleRowSelect(runInfo.runId)}
+                    />
+                  </TableCell>
+                  <TableCell>{runInfo.runId}</TableCell>
+                  <TableCell>
+                    <TextField
+                      value={runInfo.name}
+                      onChange={(newValue) => handleNameChange(index, newValue.target.value)}
+                    />
+                  </TableCell>
+                  <TableCell>{runInfo.timestamp}</TableCell>
+                  <TableCell>
+                    <Button component={Link} to={`/run/${runInfo.runId}`} variant="outlined" color="primary">
+                      Open
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
         <TablePagination
@@ -114,6 +161,15 @@ const RunInfoTable: React.FC = () => {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </TableContainer>
+      {(selectedRows.length > 1) ? (
+        <div>
+          <Button component={Link} to={`/compare/${getLinkCompareId()}`} variant="outlined" color="primary">
+            Compare runs
+          </Button>
+        </div>
+      ) : (
+        <div></div>
+      )}
     </div>
   );
 };

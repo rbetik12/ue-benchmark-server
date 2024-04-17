@@ -41,6 +41,10 @@ const RunDataGraphPage: React.FC = () => {
   useEffect(() => {
     fetchData();
   }, [id]);
+  
+  useEffect(() => {
+    updateGraphData(selectedMetric);
+  }, [runData]);
 
   const fetchData = async () => {
     try {
@@ -50,8 +54,6 @@ const RunDataGraphPage: React.FC = () => {
       }
       const runData: RunData[] = await response.json();
       setRunData(runData);
-
-      updateGraphData("fps");
 
     } catch (error) {
       console.error('Failed to fetch graph data:', error);

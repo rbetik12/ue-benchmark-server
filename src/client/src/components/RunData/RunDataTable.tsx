@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material';
+import { Link } from 'react-router-dom';
 import { RunData } from '../../models/RunData';
 import './RunDataTable.css';
 import { auth, checkAuth } from '../../utils';
@@ -50,30 +51,35 @@ const RunDataTable = () => {
   return (
     <div>
       {runDataArr ? (
-        <TableContainer component={Paper} className="tableContainer1">
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>FPS</TableCell>
-                <TableCell>CPU Time</TableCell>
-                <TableCell>GPU Time</TableCell>
-                <TableCell>Memory Operations Amount</TableCell>
-                <TableCell>Memory Amount</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {(runDataArr.map((runData, index) => (
-                <TableRow key={index}>
-                  <TableCell>{runData.fps.toFixed(2)}</TableCell>
-                  <TableCell>{runData.cpuTime.toFixed(2)}</TableCell>
-                  <TableCell>{runData.gpuTime.toFixed(2)}</TableCell>
-                  <TableCell>{runData.memopsAmount.toFixed(2)}</TableCell>
-                  <TableCell>{bytesToHumanReadable(runData.memAmount)}</TableCell>
+        <div>
+          <TableContainer component={Paper} className="tableContainer1">
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>FPS</TableCell>
+                  <TableCell>CPU Time</TableCell>
+                  <TableCell>GPU Time</TableCell>
+                  <TableCell>Memory Operations Amount</TableCell>
+                  <TableCell>Memory Amount</TableCell>
                 </TableRow>
-              )))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {(runDataArr.map((runData, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{runData.fps.toFixed(2)}</TableCell>
+                    <TableCell>{runData.cpuTime.toFixed(2)}</TableCell>
+                    <TableCell>{runData.gpuTime.toFixed(2)}</TableCell>
+                    <TableCell>{runData.memopsAmount.toFixed(2)}</TableCell>
+                    <TableCell>{bytesToHumanReadable(runData.memAmount)}</TableCell>
+                  </TableRow>
+                )))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <Button component={Link} to={`/run/${id}/graph`} variant="outlined" color="primary">
+          Open Graph
+          </Button>
+        </div>
       ) : (
         <p>Loading...</p>
       )}

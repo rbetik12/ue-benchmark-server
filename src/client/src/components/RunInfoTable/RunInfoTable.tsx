@@ -109,13 +109,14 @@ const RunInfoTable: React.FC = () => {
   }
 
   return (
-    <div>
-      <TableContainer component={Paper} className="tableContainer">
+    <div className="margin2">
+      <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
               <TableCell>Select</TableCell>
               <TableCell>Run ID</TableCell>
+              <TableCell>Name</TableCell>
               <TableCell>Timestamp</TableCell>
             </TableRow>
           </TableHead>
@@ -164,6 +165,7 @@ const RunInfoTable: React.FC = () => {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </TableContainer>
+      <br/>
       {(selectedRows.length > 1) ? (
         <div>
           <Button component={Link} to={`/compare/${getLinkCompareId()}`} variant="outlined" color="primary">

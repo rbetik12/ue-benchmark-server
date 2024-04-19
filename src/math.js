@@ -18,6 +18,12 @@ const averageData = (runData) => {
         mem_amount.push(sample['memAmount'])
     }
 
+    fps.shift();
+    cpu_time.shift();
+    gpu_time.shift();
+    memops_amount.shift();
+    mem_amount.shift();
+
     let avgData = {};
     avgData['fps'] = arraySum(fps) / fps.length
     avgData['cpuTime'] = arraySum(cpu_time) / cpu_time.length

@@ -58,11 +58,11 @@ const RunDataTable = () => {
   }
 
   return (
-    <div>
+    <div className="margin2">
       {(runDataArr && runInfo) ? (
         <div>
           <h1>Run name: {runInfo.name}</h1>
-          <TableContainer component={Paper} className="tableContainer1">
+          <TableContainer component={Paper}>
             <Table>
               <TableHead>
                 <TableRow>
@@ -86,6 +86,7 @@ const RunDataTable = () => {
               </TableBody>
             </Table>
           </TableContainer>
+          <br/>
           <Button component={Link} to={`/run/${id}/graph`} variant="outlined" color="primary">
           Open Graph
           </Button>

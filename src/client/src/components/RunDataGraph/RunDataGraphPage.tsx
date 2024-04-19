@@ -122,7 +122,7 @@ const RunDataGraphPage: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="margin2">
       <h1>Run name: {runInfo?.name}</h1>
         <InputLabel id="metric-select-label">Select Metric</InputLabel>
         <Select
@@ -137,7 +137,9 @@ const RunDataGraphPage: React.FC = () => {
           <MenuItem value="memops">Memops</MenuItem>
           <MenuItem value="memory">Memory</MenuItem>
         </Select>
-      <Line data={chartData} />
+      <div className="graph-padding">
+        <Line data={chartData} />
+      </div>
     </div>
   );
 };

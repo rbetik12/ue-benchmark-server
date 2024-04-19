@@ -1,6 +1,9 @@
-.tableContainer {
-    margin-top: 2em;
-    margin-left: 3em;
-    margin-right: 3em;
+.margin2 {
+    margin: 1em;
+}
+
+.graph-padding {
+    padding-left: 10%;
+    padding-right: 10%;
     width: auto;
 }

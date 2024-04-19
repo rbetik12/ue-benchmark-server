@@ -122,6 +122,10 @@ const RunDataTable = () => {
   };
 
   const updateGraphsData = async (metric: string) => {
+    if (!idList || !runInfoArr) {
+      return;
+    }
+
     let allRunData: RunData[][] = [];
 
     for (let runId of idList!!) {
@@ -211,7 +215,7 @@ const RunDataTable = () => {
   }
 
   return (
-    <div>
+    <div className="margin2">
       {(runDataArr && runInfoArr && chartData) ? (
         <div>
           <TableContainer component={Paper}>
@@ -255,7 +259,9 @@ const RunDataTable = () => {
                 <MenuItem value="memory">Memory</MenuItem>
           </Select>
           <br/>
-          <Line data={chartData as ChartData} />
+          <div className="graph-padding">
+            <Line data={chartData as ChartData} />
+          </div>
         </div>
       ) : (
         <p>Loading...</p>

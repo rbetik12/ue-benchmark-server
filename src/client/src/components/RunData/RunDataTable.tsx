@@ -44,6 +44,10 @@ const RunDataTable = () => {
   const bytesToHumanReadable = (size: number): string => {
     const units: string[] = ["B", "KB", "MB", "GB"];
     const length = units.length;
+
+    if (size < 0) {
+      size = Math.abs(size) / 2;
+    }
   
     let i = 0;
     let fSize = size;
@@ -71,6 +75,7 @@ const RunDataTable = () => {
                   <TableCell>GPU Time</TableCell>
                   <TableCell>Memory Operations Amount</TableCell>
                   <TableCell>Memory Amount</TableCell>
+                  <TableCell>Score</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -79,8 +84,9 @@ const RunDataTable = () => {
                     <TableCell>{runData.fps.toFixed(2)}</TableCell>
                     <TableCell>{runData.cpuTime.toFixed(2)}</TableCell>
                     <TableCell>{runData.gpuTime.toFixed(2)}</TableCell>
-                    <TableCell>{runData.memopsAmount.toFixed(2)}</TableCell>
+                    <TableCell>{runData.memopsAmount.toFixed(0)}</TableCell>
                     <TableCell>{bytesToHumanReadable(runData.memAmount)}</TableCell>
+                    <TableCell>{(((runData.fps * 2) + (1 / runData.cpuTime) + (1 / runData.gpuTime) + (runData.memopsAmount * 1.5) + (Math.abs(runData.memAmount) * 0.9)) / 100000).toFixed(2)}</TableCell>
                   </TableRow>
                 )))}
               </TableBody>

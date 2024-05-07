@@ -59,8 +59,12 @@ const RunDataTable = () => {
               throw new Error('Failed to fetch run data');
             }
 
-            const data = await response.json();
+            const data = await response.json() as RunData[];
             newRunDataArr.push(data[0]);
+
+            let runData = data[0];
+            runData.score = (((runData.fps * 2) + (1 / runData.cpuTime) + (1 / runData.gpuTime) + (runData.memopsAmount * 1.5) + (Math.abs(runData.memAmount) * 0.9)) / 100000)
+            
         } catch (error) {
             console.error(error);
         }
@@ -85,7 +89,11 @@ const RunDataTable = () => {
   const bytesToHumanReadable = (size: number): string => {
     const units: string[] = ["B", "KB", "MB", "GB"];
     const length = units.length;
-    const isNegative = size < 0;
+    //const isNegative = size < 0;
+
+    if (size < 0) {
+      size = Math.abs(size) / 2;
+    }
 
     size = Math.abs(size);
   
@@ -98,10 +106,20 @@ const RunDataTable = () => {
       }
     }
   
-    return `${isNegative ? -fSize.toFixed(2) : fSize.toFixed(2)} ${units[i]}`;
+    return `${fSize.toFixed(2)} ${units[i]}`;
   }
 
   const formatedValue = (baseValue: number, curValue: number, isBytes: boolean = false) => {
+    baseValue = Math.abs(baseValue);
+    curValue = Math.abs(curValue);
+
+    if (Math.abs(baseValue - curValue) < 0.001) {
+      if (isBytes) {
+        return `${bytesToHumanReadable(curValue)}`
+      }
+      return `${curValue.toFixed(2)}`
+    }
+
     if (isBytes) {
         return `${bytesToHumanReadable(curValue)} (${bytesToHumanReadable(curValue - baseValue)} / ${((curValue - baseValue) / baseValue * 100).toFixed(2)}%)`
     }
@@ -112,7 +130,13 @@ const RunDataTable = () => {
     return baseValue - curValue < 0
   }
 
-  const getCellColor = (baseValue: number, curValue: number) => {
+  const getCellColor = (baseValue: number, curValue: number, invert = false) => {
+    if (Math.abs(baseValue - curValue) < 0.0000001) {
+      return { color: 'black' }
+    }
+    if (invert) {
+      return { color: isIncreased(baseValue, curValue) ? 'green' : 'red' }  
+    }
     return { color: isIncreased(baseValue, curValue) ? 'red' : 'green' }
   }
 
@@ -228,17 +252,19 @@ const RunDataTable = () => {
                   <TableCell>GPU Time</TableCell>
                   <TableCell>Memory Operations Amount</TableCell>
                   <TableCell>Memory Amount</TableCell>
+                  <TableCell>Score</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {(runDataArr.map((runData, index) => (
                   <TableRow key={index}>
                     <TableCell>{runInfoArr[index].name}</TableCell>
-                    <TableCell style={getCellColor(runDataArr[0].fps, runData.fps)}>{formatedValue(runDataArr[0].fps, runData.fps)}</TableCell>
+                    <TableCell style={getCellColor(runDataArr[0].fps, runData.fps, true)}>{formatedValue(runDataArr[0].fps, runData.fps)}</TableCell>
                     <TableCell style={getCellColor(runDataArr[0].cpuTime, runData.cpuTime)}>{formatedValue(runDataArr[0].cpuTime, runData.cpuTime)}</TableCell>
                     <TableCell style={getCellColor(runDataArr[0].gpuTime, runData.gpuTime)}>{formatedValue(runDataArr[0].gpuTime, runData.gpuTime)}</TableCell>
                     <TableCell style={getCellColor(runDataArr[0].memopsAmount, runData.memopsAmount)}>{formatedValue(runDataArr[0].memopsAmount, runData.memopsAmount)}</TableCell>
-                    <TableCell style={getCellColor(runDataArr[0].memAmount, runData.memAmount)}>{formatedValue(runDataArr[0].memAmount, runData.memAmount, true)}</TableCell>
+                    <TableCell style={getCellColor(runDataArr[0].memAmount, runData.memAmount, true)}>{formatedValue(runDataArr[0].memAmount, runData.memAmount, true)}</TableCell>
+                    <TableCell style={getCellColor(runDataArr[0].score, runData.score, true)}>{formatedValue(runDataArr[0].score, runData.score)}</TableCell>
                   </TableRow>
                 )))}
               </TableBody>

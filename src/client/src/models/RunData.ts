@@ -4,4 +4,5 @@ export interface RunData {
     gpuTime: number;
     memopsAmount: number;
     memAmount: number;
+    score: number;
 }

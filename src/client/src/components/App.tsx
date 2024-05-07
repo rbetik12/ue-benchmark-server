@@ -11,7 +11,7 @@ const App: React.FC = () => {
   return (
     <div>
       <BrowserRouter>
-      <TopBar name="Right Benchmark" />
+      <TopBar name="Mem Benchmark" />
         <Routes>
           <Route path="/" element={<RunInfoTable/>} />
           <Route path="/run/:id" element={<RunDataTable/>} />
